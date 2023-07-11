@@ -1,5 +1,6 @@
 package com.cs26.iweather.ui.place
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cs26.iweather.databinding.FragmentPlaceBinding
+import com.cs26.iweather.ui.weather.WeatherActivity
 
 class PlaceFragment : Fragment() {
 
@@ -17,9 +19,9 @@ class PlaceFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-    private val viewModel by lazy { ViewModelProvider(this)[PlaceViewModel::class.java] }
-
     private lateinit var adapter: PlaceAdapter
+
+    private val viewModel by lazy { ViewModelProvider(this)[PlaceViewModel::class.java] }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentPlaceBinding.inflate(inflater, container, false)
@@ -28,6 +30,17 @@ class PlaceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        if(viewModel.isPlaceSaved()) {
+            val place = viewModel.getSavedPlace()
+            val intent = Intent(context, WeatherActivity::class.java).apply {
+                putExtra("location_lng", place.location.lng)
+                putExtra("location_lat", place.location.lat)
+                putExtra("place_name", place.name)
+            }
+            startActivity(intent)
+            activity?.finish()
+            return
+        }
         adapter = PlaceAdapter(this@PlaceFragment, viewModel.placeList)
         binding.recycleView.layoutManager = LinearLayoutManager(activity)
         binding.recycleView.adapter = adapter
@@ -61,5 +74,7 @@ class PlaceFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun getViewModel() = viewModel
 
 }

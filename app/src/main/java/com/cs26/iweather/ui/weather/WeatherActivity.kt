@@ -1,5 +1,6 @@
 package com.cs26.iweather.ui.weather
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,6 +28,8 @@ class WeatherActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWeatherBinding.inflate(layoutInflater)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        window.statusBarColor = Color.TRANSPARENT
         setContentView(binding.root)
 
         if (viewModel.locationLng.isEmpty()) {
@@ -81,7 +84,7 @@ class WeatherActivity : AppCompatActivity() {
             }
             // 填充life_index.xml
             val _lifeIndex = daily.lifeIndex
-            lifeIndex.carWashingText.text = _lifeIndex.coldRisk[0].desc
+            lifeIndex.coldRiskText.text = _lifeIndex.coldRisk[0].desc
             lifeIndex.dressingText.text = _lifeIndex.dressing[0].desc
             lifeIndex.ultravioletText.text = _lifeIndex.ultraviolet[0].desc
             lifeIndex.carWashingText.text = _lifeIndex.carWashing[0].desc

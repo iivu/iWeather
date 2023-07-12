@@ -10,6 +10,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cs26.iweather.MainActivity
 import com.cs26.iweather.databinding.FragmentPlaceBinding
 import com.cs26.iweather.ui.weather.WeatherActivity
 
@@ -30,7 +31,7 @@ class PlaceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(viewModel.isPlaceSaved()) {
+        if(viewModel.isPlaceSaved() && activity is MainActivity) {
             val place = viewModel.getSavedPlace()
             val intent = Intent(context, WeatherActivity::class.java).apply {
                 putExtra("location_lng", place.location.lng)

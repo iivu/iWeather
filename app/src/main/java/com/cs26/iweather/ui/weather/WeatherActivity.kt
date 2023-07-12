@@ -1,29 +1,31 @@
 package com.cs26.iweather.ui.weather
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.cs26.iweather.R
 import com.cs26.iweather.databinding.ActivityWeatherBinding
 import com.cs26.iweather.logic.model.Weather
 import com.cs26.iweather.logic.model.getSky
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class WeatherActivity : AppCompatActivity() {
 
     private val TAG = "WeatherActivity"
 
-    private lateinit var binding: ActivityWeatherBinding
+    lateinit var binding: ActivityWeatherBinding
 
-    private val viewModel by lazy { ViewModelProvider(this)[WeatherViewModel::class.java] }
+    val viewModel by lazy { ViewModelProvider(this)[WeatherViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,15 +34,9 @@ class WeatherActivity : AppCompatActivity() {
         window.statusBarColor = Color.TRANSPARENT
         setContentView(binding.root)
 
-        if (viewModel.locationLng.isEmpty()) {
-            viewModel.locationLng = intent.getStringExtra("location_lng") ?: ""
-        }
-        if (viewModel.locationLat.isEmpty()) {
-            viewModel.locationLat = intent.getStringExtra("location_lat") ?: ""
-        }
-        if (viewModel.placeName.isEmpty()) {
-            viewModel.placeName = intent.getStringExtra("place_name") ?: ""
-        }
+        if (viewModel.locationLng.isEmpty()) viewModel.locationLng = intent.getStringExtra("location_lng") ?: ""
+        if (viewModel.locationLat.isEmpty()) viewModel.locationLat = intent.getStringExtra("location_lat") ?: ""
+        if (viewModel.placeName.isEmpty()) viewModel.placeName = intent.getStringExtra("place_name") ?: ""
 
         viewModel.weatherLiveData.observe(this) { result ->
             val weather = result.getOrNull()
@@ -52,6 +48,23 @@ class WeatherActivity : AppCompatActivity() {
             }
             binding.swipeRefresh.isRefreshing = false
         }
+
+        binding.now.navBtn.setOnClickListener {
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+
+            override fun onDrawerOpened(drawerView: View) {}
+
+            override fun onDrawerClosed(drawerView: View) {
+                val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                manager.hideSoftInputFromWindow(drawerView.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {}
+
+        })
 
         binding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
         binding.swipeRefresh.setOnRefreshListener { refreshWeather() }
@@ -71,12 +84,12 @@ class WeatherActivity : AppCompatActivity() {
             now.nowLayout.setBackgroundResource(getSky(realTime.skycon).bg)
             // 填充forecast.xml
             forecast.forecastLayout.removeAllViews()
-            for(i in 0 until daily.skycon.size) {
+            for (i in 0 until daily.skycon.size) {
                 val skycon = daily.skycon[i]
-                Log.d(TAG,skycon.toString())
+                Log.d(TAG, skycon.toString())
                 val temperature = daily.temperature[i]
-                val view = LayoutInflater.from(this@WeatherActivity).inflate(R.layout.forecast_item,forecast.forecastLayout,false)
-                val dateInfo:TextView = view.findViewById(R.id.dateInfo)
+                val view = LayoutInflater.from(this@WeatherActivity).inflate(R.layout.forecast_item, forecast.forecastLayout, false)
+                val dateInfo: TextView = view.findViewById(R.id.dateInfo)
                 val skyIcon: ImageView = view.findViewById(R.id.skyIcon)
                 val skyInfo: TextView = view.findViewById(R.id.skyInfo)
                 val temperatureInfo: TextView = view.findViewById(R.id.temperatureInfo)
@@ -99,7 +112,7 @@ class WeatherActivity : AppCompatActivity() {
 
     }
 
-    private fun refreshWeather() {
+    fun refreshWeather() {
         binding.swipeRefresh.isRefreshing = true
         viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
     }

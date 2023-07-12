@@ -50,8 +50,13 @@ class WeatherActivity : AppCompatActivity() {
                 Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()
             }
+            binding.swipeRefresh.isRefreshing = false
         }
-        viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
+
+        binding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
+        binding.swipeRefresh.setOnRefreshListener { refreshWeather() }
+        refreshWeather()
+
     }
 
     private fun showWeather(weather: Weather) {
@@ -92,5 +97,10 @@ class WeatherActivity : AppCompatActivity() {
             weatherLayout.visibility = View.VISIBLE
         }
 
+    }
+
+    private fun refreshWeather() {
+        binding.swipeRefresh.isRefreshing = true
+        viewModel.refreshWeather(viewModel.locationLng, viewModel.locationLat)
     }
 }

@@ -21,7 +21,7 @@ class PlaceFragment : Fragment() {
 
     private lateinit var adapter: PlaceAdapter
 
-    private val viewModel by lazy { ViewModelProvider(this)[PlaceViewModel::class.java] }
+    val viewModel by lazy { ViewModelProvider(this)[PlaceViewModel::class.java] }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentPlaceBinding.inflate(inflater, container, false)
@@ -74,7 +74,5 @@ class PlaceFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    fun getViewModel() = viewModel
 
 }

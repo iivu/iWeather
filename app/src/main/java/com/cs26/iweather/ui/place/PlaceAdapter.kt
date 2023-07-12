@@ -29,7 +29,7 @@ class PlaceAdapter(private val fragment: PlaceFragment, private val placeList: L
                 putExtra("location_lat", place.location.lat)
                 putExtra("place_name", place.name)
             }
-            fragment.getViewModel().savePlace(place)
+            fragment.viewModel.savePlace(place)
             fragment.startActivity(intent)
             fragment.activity?.finish()
         }
